@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Curso</title>
+</head>
+<body>
+
+    <h2>Formulario de inscripción</h2>
+
+    <form id="formulario">
+        <!-- Nombre -->
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" name="nombre"><br><br>
+
+        <!-- Email -->
+        <label for="email">Email:</label><br>
+        <input type="text" id="email" name="email"><br><br>
+
+        <!-- Curso -->
+        <label for="curso">Curso:</label><br>
+        <select id="curso" name="curso">
+            <option value="HTML">HTML</option>
+            <option value="CSS">CSS</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="Bootstrap">Bootstrap</option>
+        </select><br><br>
+
+        <!-- Checkbox -->
+        <input type="checkbox" id="condiciones">
+        <label for="condiciones">Acepto las condiciones</label><br><br>
+
+        <!-- Botón -->
+        <button type="submit">Enviar</button>
+    </form>
+
+    <!-- Mensaje dinámico -->
+    <p id="mensaje" style="display:none;"></p>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script>
+document.getElementById("formulario").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let nombre = document.getElementById("nombre").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let curso = document.getElementById("curso").value;
+    let condiciones = document.getElementById("condiciones").checked;
+    let mensaje = document.getElementById("mensaje");
+
+    let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (nombre === "") {
+        mensaje.style.display = "block";
+        mensaje.textContent = "El nombre es obligatorio";
+        mensaje.style.color = "red";
+        return;
+    }
+
+    if (!regexEmail.test(email)) {
+        mensaje.style.display = "block";
+        mensaje.textContent = "El email no es válido";
+        mensaje.style.color = "red";
+        return;
+    }
+
+    if (!condiciones) {
+        mensaje.style.display = "block";
+        mensaje.textContent = "Debes aceptar las condiciones";
+        mensaje.style.color = "red";
+        return;
+    }
+
+    // FETCH (envío de datos)
+    fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nombre: nombre,
+            email: email,
+            curso: curso
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+           //mensaje.style.display = "block";
+           // mensaje.textContent = "Datos enviados correctamente ✔";
+           // mensaje.style.color = "green";
+           $("#mensaje").stop(true, true).hide().text("Envío correcto").css("color", "green").fadeIn();
+
+            setTimeout(() => {
+            $("#mensaje").fadeOut();
+            }, 3000);
+            } else {
+        throw new Error("Error en el envío");
+    }
+    })
+   .catch(error => {
+    $("#mensaje").stop(true, true).hide()
+        .text("Hubo un problema al enviar los datos")
+        .css("color", "red")
+        .fadeIn();
+
+    setTimeout(() => {
+        $("#mensaje").fadeOut();
+    }, 3000);
+});
+
+});
+</script>
+
+
+
+
+</body>
+</html>
